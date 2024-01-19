@@ -1,10 +1,17 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
+import { add } from "../store/cartSlice";
 
 const Product = () => {
   const [products, setProducts] = useState([]);
+  const dispatch = useDispatch();
+
+  function addToCart(product) {
+    dispatch(add(product));
+  }
 
   const cards = products.map((product) => (
     <div
@@ -32,7 +39,9 @@ const Product = () => {
           <Card.Text>INR: {product.price}</Card.Text>
         </Card.Body>
         <Card.Footer>
-          <Button variant="primary">Add To Cart</Button>
+          <Button variant="primary" onClick={() => addToCart(product)}>
+            Add To Cart
+          </Button>
         </Card.Footer>
       </Card>
     </div>
