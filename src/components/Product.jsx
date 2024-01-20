@@ -1,13 +1,13 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
+import { Alert, Button } from "react-bootstrap";
 import { add } from "../store/cartSlice";
+import { getProducts } from "../store/productSlice";
 
 const Product = () => {
-  const [products, setProducts] = useState([]);
   const dispatch = useDispatch();
+  const { data: products, status } = useSelector((state) => state.products);
 
   function addToCart(product) {
     dispatch(add(product));
@@ -48,20 +48,22 @@ const Product = () => {
   ));
 
   useEffect(() => {
-    async function getProducts() {
-      const fakeStoreApi = "https://fakestoreapi.com/products";
-
-      try {
-        const response = await axios.get(fakeStoreApi);
-        const data = response.data;
-        setProducts(data);
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    getProducts();
+    dispatch(getProducts());
   }, []);
+
+  if (status === "loading") {
+    return <h1 style={{ textAlign: "center" }}>Loading...</h1>;
+  }
+
+  if (status === "error") {
+    return (
+      <Alert variant="danger">
+        <h3 style={{ textAlign: "center" }}>
+          Something went wrong! Try again later.
+        </h3>
+      </Alert>
+    );
+  }
 
   return <div className="row">{cards}</div>;
 };
